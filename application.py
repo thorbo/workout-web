@@ -170,14 +170,13 @@ def signup():
     if request.method == "POST":
         #debug
         action = request.form["su_button"]
-        print(action)
         user = session["user_id"]
 
         if action == "update":
             # SIGN UP TO EXISTING GROUP
             rows = db.execute("SELECT * FROM registry WHERE (user_id, group_num) = (?, ?)", user, request.form.get("signup"))
             if len(rows) != 0:
-                # User is already signed up to selected group
+                # Error check - is user already signed up to selected group?
                 return redirect("/")
             else:
                 # Sign user up
@@ -188,9 +187,10 @@ def signup():
             rows = db.execute("SELECT * FROM groups WHERE group_name == ?", request.form.get("groupname"))
             GROUPS = db.execute("SELECT group_name, group_num FROM groups")
             if len(rows) != 0:
-                # Checks if group name is taken
+                # Error check - is group name taken?
                 return render_template("signup.html", groups=GROUPS, error=1)
             elif not request.form["groupname"] or not request.form["goal"]:
+                # Error check - are group name and goal provided?
                 return render_template("signup.html", groups=GROUPS, error=2)
             else:
                 # add new group to groups table
