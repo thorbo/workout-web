@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Log In
+{% endblock %}
+
+{% block main %}
+    <form action="/login" method="post">
+        <div class="form-group">
+            <input autocomplete="off" autofocus class="form-control " name="username" placeholder="Username" type="text" required>
+        </div>
+        <div class="form-group">
+            <input class="form-control " name="password" placeholder="Password" type="password" required>
+        </div>
+
+        {% if error == 1 %}
+        <div class="alert alert-warning">
+            <strong>Login attempt thwarted!</strong> Try again or <a href="/register">register</a> new user
+        </div>
+        {% endif %}
+
+        <button class="btn btn-primary " type="submit" required>Log In</button>
+    </form>
+
+{% endblock %}

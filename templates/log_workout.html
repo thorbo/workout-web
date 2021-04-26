@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+
+{% block script %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let selection=document.getElementById("type");
+        selection.addEventListener("change", function() {
+            if (selection.value == 1)
+            {
+                document.getElementById("type_desc").innerHTML = "test1"
+            }
+            else
+            {
+                document.getElementById("type_desc").innerHTML = "test2"
+            }
+        });
+    });
+
+
+</script>
+{% endblock %}
+
+{% block title %}
+    Register
+{% endblock %}
+
+{% block main %}
+
+
+    <form action="/log_workout" method="post">
+        <div class="form-group">
+            <select class="form-control" id="type" name="type" placeholder="Group Type" type="list">
+                <option value="1">Run X minute mile</option>
+                <option value="2">Do X pushups in a row</option>
+            </select>
+            <input class="form-control" id="log" name="log" placeholder="X" type="number" step="0.01" required>
+            <input class="form-control" id="date" name="date" type="date" required>
+        </div>
+        <button class="btn btn-primary" type="submit" value="0">Log it!</button>
+    </form>
+{% endblock %}

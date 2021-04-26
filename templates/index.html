@@ -1,0 +1,79 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Home
+{% endblock %}
+
+{% block script %}
+   <!--<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>-->
+    <script>
+      // Script 1 — where the data gets loaded
+        data = JSON.parse('{{ data|tojson }}')
+        typ = JSON.parse('{{ typ }}')
+
+        for (i=0; i<data.length; i++){
+          data[i][0] = new Date(data[i][0])
+        }
+
+        chartType = "LineChart";
+        containerId = "chart1";
+        if (typ==1){
+          options = {
+            "title":"X Pushups in a Row",
+            'interpolateNulls': true
+          };
+        }
+        else {
+          options = {
+            "title":"Run X Minute Mile",
+            'interpolateNulls': true
+          };
+        };
+
+    </script>
+
+    <script src="https://www.gstatic.com/charts/loader.js">
+    // Script 2- Load API
+    </script>
+
+    <script>
+    // Script 3 — Where we create and display a chart
+    // Load the Visualization API and the corechart package
+    google.charts.load('current', {'packages':['corechart']});
+
+    // Set a callback for when the API is loaded
+    google.charts.setOnLoadCallback(drawChart);
+
+    // This is the callback function which actually draws the chart
+      function drawChart(){
+        google.visualization.drawChart({
+          "containerId": containerId, //div name where chart is diplayed
+          "dataTable": data, // is the actual data to be plotted.
+          "chartType": chartType, //type of plot that we want, for example, LineChart, PieChart, ColumnChart.
+          "options": options //can include a number of different options for the chart, for example a title.
+        });
+      }
+    </script>
+
+{% endblock %}
+
+{% block main %}
+<div style="width:1200px; height:600px" id="chart1" ></div>
+
+<form action="/" method="post">
+  <div class="form-group">
+    <label for="sel1">Select Group:</label>
+    <select class="form-control" id="sel1" name="sel1" onchange="this.form.submit()">
+      {% for group in groups %}
+        {% if selectedGroup == group%}
+          <option value="{{group["group_num"]}}" selected> {{ group["group_name"] }} </option>
+        {% else %}
+          <option value="{{group["group_num"]}}"> {{ group["group_name"] }} </option>
+        {% endif %}
+      {% endfor %}
+    </select>
+  </div>
+</form>
+
+
+{% endblock %}
