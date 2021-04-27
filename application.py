@@ -52,6 +52,8 @@ db = SQL("sqlite:///workout.db")
 def index():
     user = session["user_id"]
 
+    userHasNoGroups = False
+
     if request.method == "POST":
         # Update data table with workout data
         action = request.form.get("logbutton")
@@ -70,7 +72,12 @@ def index():
     else:
         # Request groups that user belongs to
         #TODO - handle when user isn't signed up to any groups
-        GROUPS = db.execute("SELECT * FROM groups WHERE group_num IN (SELECT group_num FROM registry WHERE user_id = ?)", user)
+
+        GROUPS = db.execute("SELECT group_name, group_num, type, start FROM groups WHERE group_num IN (SELECT group_num FROM registry WHERE user_id = ?)", user)
+        if len(GROUPS) == 0:
+            userHasNoGroups = True
+            return render_template("greeting.html")
+
         GROUP = GROUPS[0]
     goal = GROUP['goal']
     typ = GROUP['type']
@@ -201,6 +208,12 @@ def register():
             return redirect("/login")
     else:
         return render_template("register.html")
+
+
+@app.route("/info", methods=["GET"])
+@login_required
+def info():
+    return render_template("info.html")
 
 
 def errorhandler(e):
