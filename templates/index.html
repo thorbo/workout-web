@@ -17,7 +17,7 @@
 
         chartType = "LineChart";
         containerId = "chart1";
-        if (typ==1){
+        if (typ == 1){
           options = {
             title:"X Pushups in a Row",
             interpolateNulls: true,
@@ -25,17 +25,15 @@
               0: { lineDashStyle: [10, 5] },
             },
           };
-        }
-        else {
+        } else {
           options = {
-            "title":"Run X Minute Mile",
-            'interpolateNulls': true,
+            title:"Run X Minute Mile",
+            interpolateNulls: true,
             series: {
               0: { lineDashStyle: [10, 5] },
             },
           };
         };
-
 
     </script>
 
@@ -102,8 +100,10 @@
 
   <div class="form-group formy" style="width:70%">
       <select class="form-control" id="type" name="type" placeholder="Group Type" type="list">
-          <option value="1">Run X minute mile</option>
-          <option value="2">Do X pushups in a row</option>
+          <option value="1">Do X pushups in a row</option>
+          <option value="2">Run X minute mile</option>
+          <option value="3">Run X miles</option>
+          <option value="4">Do X pushups</option>
       </select>
       <input class="form-control" id="log" name="log" placeholder="X" type="number" step="0.01" required>
       <input class="form-control" id="date" name="date" type="date" required>

@@ -134,7 +134,6 @@ def addgoal(data, goal):
         data[-1].insert(1, goal)
         for i in range(2, len(data) - 1):
             data[i].insert(1, None)
-
     return data
 
 def projectwin(data, START):
@@ -151,7 +150,6 @@ def projectwin(data, START):
         # x values represent days since start
         for i, day in enumerate(x):
             day = datetime.fromisoformat(day).timestamp()
-            # x[i] = int((day-start)/86400)
             x[i] = int(day)
 
         # For each user, clean up x,y data by removing None values. Ignore 1st row (goal values).
@@ -159,7 +157,6 @@ def projectwin(data, START):
             tempy = user[1:]
             tempx = x
             for i, datum in reversed(list(enumerate(tempy))):
-                #print(i, datum)
                 if datum == None:
                     tempx = np.delete(tempx, i)
                     tempy = np.delete(tempy, i)
@@ -174,7 +171,6 @@ def projectwin(data, START):
 
         if winning != 0:
             data[0].append(f"{winner} is winning!")
-            print(datetime.fromisoformat(data[1][0]).timestamp())
             data[1].append(np.polynomial.polynomial.polyval(datetime.fromisoformat(data[1][0]).timestamp(), winnerp))
             data[-1].append(np.polynomial.polynomial.polyval(datetime.fromisoformat(data[-1][0]).timestamp(), winnerp))
             for i in range(2, len(data)-1):
