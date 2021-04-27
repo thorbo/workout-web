@@ -53,6 +53,18 @@ def index():
     user = session["user_id"]
 
     if request.method == "POST":
+
+        action = request.form.get("logbutton")
+
+        if action == "logwork":
+            row = db.execute("SELECT * FROM data WHERE (user_id, time, type) = (?, ?, ?)", user, request.form.get("date"), request.form.get("type"))
+            if len(row) == 0:
+                # New workout being logged
+                db.execute("INSERT INTO data VALUES (?, ?, ?, ?)", user, request.form.get("type"), request.form.get("log"), request.form.get("date"))
+            else:
+                # Overwrite previous workout
+                db.execute("UPDATE data SET value = ? WHERE (user_id, type, time) = (?, ?, ?)", request.form.get("log"), user, request.form.get("type"), request.form.get("date"))
+
         # user selects a group that they want to see
         GROUPS = db.execute("SELECT group_name, group_num, type, start FROM groups WHERE group_num IN (SELECT group_num FROM registry WHERE user_id = ?)", user)
         GROUP = next((g for g in GROUPS if g["group_num"] == int(request.form["sel1"])), None)
@@ -63,8 +75,7 @@ def index():
         GROUP = GROUPS[0]
     typ=GROUP['type']
     USERS = db.execute("SELECT user_id, name FROM registry JOIN users ON registry.user_id = users.id WHERE group_num = ? order by user_id", GROUP['group_num'])
-    # TODO
-    # fix format of start dates recorded in groups DB table to be YYYY-MM-DD
+
     START = GROUP['start']
     userIds = ','.join(str(user["user_id"]) for user in USERS)
     myData = db.execute(
@@ -77,6 +88,8 @@ def index():
         ORDER BY time, user_id
         """)
 
+
+
     headers = ["Day"]
     for user in USERS:
         headers.append(user["name"])
@@ -87,6 +100,8 @@ def index():
 
     data = []
     data.append(headers)
+
+
 
     day = START
     userIdx = 0
@@ -107,10 +122,18 @@ def index():
             day = row["time"]
             # reset the day's data for the next day
             dayOfData = [day]
+        # DEBUG
+        # print(myData)
+        # print(len(USERS))
+        # print(row["user_id"])
+        # print(USERS[userIdx])
+        # print(USERS[userIdx]["user_id"])
 
         while USERS[userIdx]["user_id"] != row["user_id"]:
             dayOfData.append(None)
             userIdx += 1
+            print(userIdx)
+            print(userIdx == len(USERS))
 
         dayOfData.append(row["value"])
         dataPresent[userIdx] = True
@@ -149,19 +172,21 @@ def index():
     return render_template("index.html", groups=GROUPS, data=data, typ=typ, selectedGroup=GROUP)
 
 
-@app.route("/log_workout", methods=["GET", "POST"])
-@login_required
-def log_workout():
-    if request.method == "POST":
-        user = session["user_id"]
-        # TODO
-        # UPDATE if value already logged for selected day
+# @app.route("/log_workout", methods=["GET", "POST"])
+# @login_required
+# def log_workout():
+#     if request.method == "POST":
+#         user = session["user_id"]
+#         action = request.form.get("logwork")
+#         print(f"action= ", action)
+#         # TODO
+#         # UPDATE if value already logged for selected day
 
-        # INSERT workout info
-        db.execute("INSERT INTO data VALUES (?, ?, ?, ?)", user, request.form.get("type"), request.form.get("log"), request.form.get("date"))
-        return render_template("log_workout.html")
-    else:
-        return render_template("log_workout.html")
+#         # INSERT workout info
+#         db.execute("INSERT INTO data VALUES (?, ?, ?, ?)", user, request.form.get("type"), request.form.get("log"), request.form.get("date"))
+#         return render_template("log_workout.html")
+#     else:
+#         return render_template("log_workout.html")
 
 
 @app.route("/signup", methods=["GET", "POST"])

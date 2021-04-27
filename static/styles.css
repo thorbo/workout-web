@@ -8,6 +8,13 @@ body {
     background-repeat: repeat;
 }
 
+.formy {
+    border-style: solid;
+    border-color: #d6442d;
+    background-color: #f1d0b8;
+    margin: auto;
+    padding: 10px;
+}
 .arn {
     width: 150px;
     height: auto;

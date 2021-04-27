@@ -6,56 +6,48 @@
 
 {% block main %}
 <div class="accordion" id="accordionExample">
-  <form action="/signup" method="post">
 
-    <div class="card">
-      <div class="card-header" id="headingOne">
-        <h2 class="mb-0">
-          <button class="btn btn-link btn-block text-center" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-            Create New Group
-          </button>
-        </h2>
-      </div>
-      <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
-        <div class="card-body">
-          <div class="form-group">
-              <input autocomplete="off" autofocus class="form-control" name="groupname" placeholder="Group Name" type="text">
-              <select class="form-control" name="type" placeholder="Group Type" type="list">
-                <option value="1">Run X minute mile</option>
-                <option value="2">Do X pushups in a row</option>
-                <option value="3">Run X miles</option>
-                <option value="4">Do X pushups</option>
-              </select>
-              <input class="form-control" name="goal" placeholder="X (Group Goal)" type="number" step="0.01">
-          </div>
+<form action="/signup" method="post">
+  <div class="panel-group" style="margin: 30px" id="accordion">
+
+    <div class="panel panel-default formy" style="width: 70%">
+        <a class="panel-title" data-toggle="collapse" data-parent="#accordion" href="#collapse1">
+          <div style="background-color:transparent"> Create New Group </div>
+        </a>
+      <div id="collapse1" class="panel-collapse collapse in">
+        <div class="panel-body form-group">
+          <input autocomplete="off" autofocus class="form-control" name="groupname" placeholder="Group Name" type="text">
+          <select class="form-control" name="type" placeholder="Group Type" type="list">
+            <option value="1">Run X minute mile</option>
+            <option value="2">Do X pushups in a row</option>
+            <option value="3">Run X miles</option>
+            <option value="4">Do X pushups</option>
+          </select>
+          <input class="form-control" name="goal" placeholder="X (Group Goal)" type="number" step="0.01">
           <button class="btn btn-primary" type="submit" name="su_button" value="new">Create Group</button>
         </div>
       </div>
     </div>
 
-    <div class="card">
-      <div class="card-header" id="headingTwo">
-        <h2 class="mb-0">
-          <button class="btn btn-link btn-block text-center collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-            Sign Up to Existing Group
-          </button>
-        </h2>
-      </div>
-      <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
-        <div class="card-body">
-          <div class="form-group">
-              <select class="form-control" name="signup" type="list">
-                {% for group in groups %}
-                <option value="{{ group['group_num'] }}">{{ group["group_name"] }}</option>
-                {% endfor %}
-              </select>
-          </div>
+    <div class="panel panel-default formy" style="width: 70%">
+        <a class="panel-title" data-toggle="collapse" data-parent="#accordion" href="#collapse2">
+          <div  style="background-color:transparent"> Sign Up to Existing Group </div>
+        </a>
+      <div id="collapse2" class="panel-collapse collapse ">
+        <div class="panel-body form-group">
+          <select class="form-control" name="signup" type="list">
+            {% for group in groups %}
+            <option value="{{ group['group_num'] }}">{{ group["group_name"] }}</option>
+            {% endfor %}
+          </select>
           <button class="btn btn-primary" type="submit" name="su_button" value="update">Sign Up</button>
         </div>
       </div>
     </div>
 
-  </form>
+  </div>
+</form>
+
 </div>
         {% if error == 1 %}
         <div class="alert alert-warning">

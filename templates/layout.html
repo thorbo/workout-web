@@ -11,9 +11,9 @@
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
       <link href="/static/styles.css" rel="stylesheet">
+      <link href="https://cdn3.iconfinder.com/data/icons/vector-icons-20/96/961-512.png" rel="icon">
 
-        {% block script %}
-        {% endblock %}
+{% block script %}{% endblock %}
 
         <title>Workout Challenge: {% block title %}{% endblock %}</title>
 
@@ -29,7 +29,7 @@
             {% if session.user_id %}
                 <ul class="nav navbar-nav">
                     <li><a href="/signup">Group Sign Up</a></li>
-                    <li><a href="/log_workout">Log Workout</a></li>
+                    <!--<li><a href="/log_workout">Log Workout</a></li>-->
                     <li><a href="/info">Challenge Info</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
