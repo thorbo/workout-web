@@ -19,6 +19,7 @@
         containerId = "chart1";
 
         chartTitle = typ==1 ? 'X Pushups in a Row' : 'Run X Minute Mile'
+        vAxisLabel = typ==1 ? 'Pushups' : 'Mile Time'
         options = {
             "title":`${chartTitle}`,
             'interpolateNulls': true,
@@ -27,6 +28,16 @@
             series: {
               0: { lineDashStyle: [10, 5] },
             },
+
+            vAxis: {
+              title:`${vAxisLabel}`,
+              textPosition: 'in',
+              titleTextStyle: {
+                bold: true,
+                fontSize: 16
+              }
+
+            }
 
           };
 
