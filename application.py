@@ -72,7 +72,6 @@ def index():
         GROUPS = db.execute("SELECT * FROM groups WHERE group_num IN (SELECT group_num FROM registry WHERE user_id = ?)", user)
         if len(GROUPS) == 0:
             return render_template("greeting.html")
-
         GROUP = GROUPS[0]
     goal = GROUP['goal']
     typ = GROUP['type']
@@ -86,7 +85,51 @@ def index():
         # Check for more than multiple data points and more than one user in the group
         data = projectwin(data, typ)
 
-    return render_template("index.html", groups=GROUPS, data=data, typ=typ, selectedGroup=GROUP)
+    if int(typ) == 1: # Run X minute mile
+        print("typ is 1")
+        for i, user in enumerate(USERS):
+            # if there's no data skip this user
+            if not dataPresent[i]:
+                print(f"skipped {user}")
+                user["score"] = float('inf')
+                continue
+
+            # get fastest mile
+            fastestMile = float('inf')
+            # skip the header row
+            for day in data[1:]:
+                # add one because the first element is a date
+                if day[i + 1] == None:
+                    continue
+                mileTime = int(day[i + 1])
+                # if it's a valid value
+                if mileTime:
+                    fastestMile = min(fastestMile, mileTime)
+
+            user["score"] = fastestMile
+
+            # if better than or equal to goal, then reachedGoal = True
+            user["reachedGoal"] = user["score"] <= GROUP["goal"]
+
+        # sort USERS by lowest
+        USERS.sort(key=lambda x: x.get('score'))
+
+    # elif typ == 2: # Do X pushups in a row
+
+    # elif typ == 3: # Run X miles
+
+    # elif typ == 4: # Do X pushups
+
+    # remove users with no data
+    for i, isDataPresent in reversed(list(enumerate(dataPresent))):
+        # if that user does not have data, remove their column
+        if not isDataPresent:
+            # add one because the first element is a date
+            idx = i + 1
+            for day in data:
+                del day[idx]
+
+    return render_template("index.html", groups=GROUPS, data=data, typ=typ, selectedGroup=GROUP, users=USERS)
 
 
 @app.route("/signup", methods=["GET", "POST"])
