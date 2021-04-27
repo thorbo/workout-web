@@ -57,8 +57,21 @@
 
 {% endblock %}
 
+
+{% block background %}
+<!--Little Arnolds-->
+<div class="arncontain body1" id="arnold" style="z-index:-1; position: absolute"></div>
+<script>
+    var x = Math.floor(screen.width / (150 + 2*50)) * Math.floor(screen.height / (100 + 2*30));
+    var y = "";
+    for (i = 0; i < x; i++){
+        y = y + '<img class="arn" src="https://www.muscleandfitness.com/wp-content/uploads/2019/03/arnold-laying-pose-GettyImages-831491930.jpg?quality=86&strip=all"></img>';
+    };
+    document.getElementById("arnold").innerHTML = y;
+</script>
+{% endblock %}
+
 {% block main %}
-<div style="width:1200px; height:600px" id="chart1" ></div>
 
 <form action="/" method="post">
   <div class="form-group">
@@ -74,6 +87,8 @@
     </select>
   </div>
 </form>
+
+<div style="width:1200px; height:600px" id="chart1" ></div>
 
 
 {% endblock %}

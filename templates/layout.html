@@ -1,21 +1,16 @@
 <!DOCTYPE html>
 
 <html lang="en">
-
     <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    <!-- http://getbootstrap.com/docs/4.5/ -->
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
-
-
-
-        <!-- http://getbootstrap.com/docs/4.5/ -->
-<meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-
-    <link href="/static/styles.css" rel="stylesheet">
+      <link href="/static/styles.css" rel="stylesheet">
 
         {% block script %}
         {% endblock %}
@@ -25,8 +20,8 @@
     </head>
 
     <body>
-
-        <nav class="navbar navbar-inverse">
+        <!--Navbar -->
+        <nav class="navbar navbar-inverse" style="margin: 0px">
          <div class="container-fluid">
           <div class="navbar-header">
             <a class="navbar-brand" href="/"> Workout with Friends </a>
@@ -42,18 +37,6 @@
                 </ul>
          </div>
         </nav>
-
-        <div class="arncontain" id="arnold" style="z-index:-1; position: absolute"></div>
-
-        <script>
-            var x = Math.floor(screen.width / (150 + 2*50)) * Math.floor(screen.height / (100 + 2*30));
-            var y = "";
-            for (i = 0; i < x; i++){
-                y = y + '<img class="arn" src="https://www.muscleandfitness.com/wp-content/uploads/2019/03/arnold-laying-pose-GettyImages-831491930.jpg?quality=86&strip=all"></img>';
-            };
-            document.getElementById("arnold").innerHTML = y;
-        </script>
-
             {% else %}
             <ul class="nav navbar-nav navbar-right">
                 <li class="nav-item"><a class="nav-link" href="/register">Register</a></li>
@@ -63,6 +46,7 @@
         </nav>
             {% endif %}
 
+{% block background %}{% endblock %}
 
         <main class="container p-5">
             {% block main %}{% endblock %}
