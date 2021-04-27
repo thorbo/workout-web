@@ -15,20 +15,31 @@
           data[i][0] = new Date(data[i][0])
         }
 
+        last = data[0].length;
         chartType = "LineChart";
         containerId = "chart1";
         if (typ==1){
           options = {
-            "title":"X Pushups in a Row",
-            'interpolateNulls': true
+            title:"X Pushups in a Row",
+            interpolateNulls: true,
+            series: {
+              0: { lineDashStyle: [10, 5] },
+            },
           };
         }
         else {
           options = {
             "title":"Run X Minute Mile",
-            'interpolateNulls': true
+            'interpolateNulls': true,
+            series: {
+              0: { lineDashStyle: [10, 5] },
+            },
           };
         };
+        options.push({
+
+        });
+        alert(options)
 
     </script>
 
