@@ -9,7 +9,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import date
 
 
-from helpers import apology, login_required
+from helpers import apology, login_required, datatable, addgoal
 
 # Configure application
 app = Flask(__name__)
@@ -53,9 +53,8 @@ def index():
     user = session["user_id"]
 
     if request.method == "POST":
-
+        # Update data table with workout data
         action = request.form.get("logbutton")
-
         if action == "logwork":
             row = db.execute("SELECT * FROM data WHERE (user_id, time, type) = (?, ?, ?)", user, request.form.get("date"), request.form.get("type"))
             if len(row) == 0:
@@ -66,108 +65,21 @@ def index():
                 db.execute("UPDATE data SET value = ? WHERE (user_id, type, time) = (?, ?, ?)", request.form.get("log"), user, request.form.get("type"), request.form.get("date"))
 
         # user selects a group that they want to see
-        GROUPS = db.execute("SELECT group_name, group_num, type, start FROM groups WHERE group_num IN (SELECT group_num FROM registry WHERE user_id = ?)", user)
+        GROUPS = db.execute("SELECT * FROM groups WHERE group_num IN (SELECT group_num FROM registry WHERE user_id = ?)", user)
         GROUP = next((g for g in GROUPS if g["group_num"] == int(request.form["sel1"])), None)
     else:
         # Request groups that user belongs to
         #TODO - handle when user isn't signed up to any groups
-        GROUPS = db.execute("SELECT group_name, group_num, type, start FROM groups WHERE group_num IN (SELECT group_num FROM registry WHERE user_id = ?)", user)
+        GROUPS = db.execute("SELECT * FROM groups WHERE group_num IN (SELECT group_num FROM registry WHERE user_id = ?)", user)
         GROUP = GROUPS[0]
-    typ=GROUP['type']
+    goal = GROUP['goal']
+    typ = GROUP['type']
     USERS = db.execute("SELECT user_id, name FROM registry JOIN users ON registry.user_id = users.id WHERE group_num = ? order by user_id", GROUP['group_num'])
-
     START = GROUP['start']
-    userIds = ','.join(str(user["user_id"]) for user in USERS)
-    myData = db.execute(
-        f"""
-        select user_id, value, time
-        from data
-        where type = {typ}
-        and time >= {START}
-        and user_id in ({userIds})
-        ORDER BY time, user_id
-        """)
 
+    data = datatable(db, USERS, START, typ)
 
-
-    headers = ["Day"]
-    for user in USERS:
-        headers.append(user["name"])
-
-    dataPresent = []
-    for user in USERS:
-        dataPresent.append(False)
-
-    data = []
-    data.append(headers)
-
-
-
-    day = START
-    userIdx = 0
-    numUsers = len(USERS)
-    dayOfData = [day]
-    for row in myData:
-        # if it's a new day
-        if row["time"] != day:
-            # finish the rest of the users for the day
-            while userIdx < numUsers:
-                dayOfData.append(None)
-                userIdx += 1
-            # append the day's data
-            data.append(dayOfData)
-            # reset userIdx
-            userIdx = 0
-            # set the new day
-            day = row["time"]
-            # reset the day's data for the next day
-            dayOfData = [day]
-        # DEBUG
-        # print(myData)
-        # print(len(USERS))
-        # print(row["user_id"])
-        # print(USERS[userIdx])
-        # print(USERS[userIdx]["user_id"])
-
-        while USERS[userIdx]["user_id"] != row["user_id"]:
-            dayOfData.append(None)
-            userIdx += 1
-            print(userIdx)
-            print(userIdx == len(USERS))
-
-        dayOfData.append(row["value"])
-        dataPresent[userIdx] = True
-        userIdx += 1
-    # finish the rest of the users
-    while userIdx < numUsers:
-        dayOfData.append(None)
-        userIdx += 1
-    # append the day's data
-    data.append(dayOfData)
-
-    # remove users with no data
-    for i, isDataPresent in reversed(list(enumerate(dataPresent))):
-        # if that user does not have data, remove their column
-        if not isDataPresent:
-            # add one because the first element is a date
-            idx = i + 1
-            for day in data:
-                del day[idx]
-
-    # """ CONVERT SQL QUERY DICTS INTO TABLE FOR GOOGLE CHART API USE
-
-    #                 TABLE FORMAT:
-
-    #                 'Day'       |   'user#1'    |   ...
-    #                 -----------------------------------
-    #                 YYYY-MM-DD  |   INT         |   ...
-    #                 -----------------------------------
-    #                 .
-    #                 .
-    #                 .
-    # """
-
-    """ END CONVERT """
+    data = addgoal(data, goal)
 
     return render_template("index.html", groups=GROUPS, data=data, typ=typ, selectedGroup=GROUP)
 
@@ -276,7 +188,6 @@ def register():
         exists = db.execute("SELECT * FROM users WHERE name = (?)", request.form.get("username"))
         if len(exists) >= 1:
              return render_template("register.html", error=1)
-
 
         # Ensure password and confirmation match
         elif request.form.get("confirmation") != request.form.get("password"):
