@@ -208,8 +208,8 @@ def register():
 
 
 @app.route("/info", methods=["GET"])
-@login_required
 def info():
+    """Get Info"""
     return render_template("info.html")
 
 

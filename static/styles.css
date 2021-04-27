@@ -98,3 +98,17 @@ hr.rounded {
   border-radius: 5px;
   border-color: #4CAF50;
 }
+
+.note
+{
+    background-color: #dcf4ff;
+    font-size: large;
+    font: Arial, sans-serif, bold;
+}
+
+.note-background
+{
+    background-color: #eaeaea;
+    padding: 50px;
+
+}
