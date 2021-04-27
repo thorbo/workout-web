@@ -9,7 +9,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import date
 
 
-from helpers import apology, login_required, datatable, addgoal
+from helpers import apology, login_required, datatable, addgoal, projectwin
 
 # Configure application
 app = Flask(__name__)
@@ -78,8 +78,8 @@ def index():
     START = GROUP['start']
 
     data = datatable(db, USERS, START, typ)
-
     data = addgoal(data, goal)
+    data = projectwin(data, START)
 
     return render_template("index.html", groups=GROUPS, data=data, typ=typ, selectedGroup=GROUP)
 
