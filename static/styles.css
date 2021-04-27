@@ -1,3 +1,30 @@
+
+body {
+    background-color: #545454;
+}
+
+.body1 {
+    background-image: url(https://cdn.livekindly.co/wp-content/uploads/2019/07/vegan-plant-based-news-arnold-schwarzenegger-meat-livekindly-1.jpg);
+    background-repeat: repeat;
+}
+
+.arn {
+    width: 150px;
+    height: auto;
+    border-radius: 30%;
+    margin-top: 30px;
+    margin-right: 50px;
+    margin-bottom: 30px;
+    margin-left: 50px;
+    display: inline-block;
+}
+
+.arncontain {
+  /*display: flex;*/
+  /*justify-content: center;*/
+  display: inline-block;
+}
+
 nav .navbar-brand
 {
     /* size for brand */
