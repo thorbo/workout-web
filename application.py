@@ -64,13 +64,11 @@ def index():
                 # Overwrite previous workout
                 db.execute("UPDATE data SET value = ? WHERE (user_id, type, time) = (?, ?, ?)", request.form.get("log"), user, request.form.get("type"), request.form.get("date"))
 
-        # user selects a group that they want to see
+        # User selects a group that they want to see
         GROUPS = db.execute("SELECT * FROM groups WHERE group_num IN (SELECT group_num FROM registry WHERE user_id = ?)", user)
         GROUP = next((g for g in GROUPS if g["group_num"] == int(request.form["sel1"])), None)
     else:
         # Request groups that user belongs to
-        #TODO - handle when user isn't signed up to any groups
-
         GROUPS = db.execute("SELECT * FROM groups WHERE group_num IN (SELECT group_num FROM registry WHERE user_id = ?)", user)
         if len(GROUPS) == 0:
             return render_template("greeting.html")
@@ -83,26 +81,12 @@ def index():
 
     data = datatable(db, USERS, START, typ)
     data = addgoal(data, goal)
-    data = projectwin(data, START)
+
+    if len(data) > 4 and len(data[0]) > 3:
+        # Check for more than multiple data points and more than one user in the group
+        data = projectwin(data, typ)
 
     return render_template("index.html", groups=GROUPS, data=data, typ=typ, selectedGroup=GROUP)
-
-
-# @app.route("/log_workout", methods=["GET", "POST"])
-# @login_required
-# def log_workout():
-#     if request.method == "POST":
-#         user = session["user_id"]
-#         action = request.form.get("logwork")
-#         print(f"action= ", action)
-#         # TODO
-#         # UPDATE if value already logged for selected day
-
-#         # INSERT workout info
-#         db.execute("INSERT INTO data VALUES (?, ?, ?, ?)", user, request.form.get("type"), request.form.get("log"), request.form.get("date"))
-#         return render_template("log_workout.html")
-#     else:
-#         return render_template("log_workout.html")
 
 
 @app.route("/signup", methods=["GET", "POST"])

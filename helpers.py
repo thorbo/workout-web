@@ -78,12 +78,12 @@ def datatable(db, USERS, START, typ):
             day = row["time"]
             # reset the day's data for the next day
             dayOfData = [day]
-        # DEBUG
-        # print(myData)
-        # print(len(USERS))
-        # print(row["user_id"])
-        # print(USERS[userIdx])
-        # print(USERS[userIdx]["user_id"])
+            # DEBUG
+            # print(myData)
+            # print(len(USERS))
+            # print(row["user_id"])
+            # print(USERS[userIdx])
+            # print(USERS[userIdx]["user_id"])
 
         while USERS[userIdx]["user_id"] != row["user_id"]:
             dayOfData.append(None)
@@ -136,45 +136,56 @@ def addgoal(data, goal):
             data[i].insert(1, None)
     return data
 
-def projectwin(data, START):
+def projectwin(data, typ):
 
     if len(data[0]) > 2:
-        # Transpose table. 0th row is dates. Subsequent rows are values for each user. Ignore 1st column.
+        # Transpose table:
+        # 0th row is dates.
+        # Subsequent rows are values for each user.
+        # Ignore 1st column (user names etc)
         dataT = np.transpose(data)
-        start = datetime.fromisoformat(START).timestamp()
-        x = dataT[0][1:]
+        DAYS = dataT[0][1:]
         winner = ""
         winnerp = []
-        winning = 0
+        initial = 0 if typ == "1" else 100
+        winning = initial
 
-        # x values represent days since start
-        for i, day in enumerate(x):
+        # DAYS values represent numerical day values
+        for i, day in enumerate(DAYS):
             day = datetime.fromisoformat(day).timestamp()
-            x[i] = int(day)
+            DAYS[i] = int(day)
 
-        # For each user, clean up x,y data by removing None values. Ignore 1st row (goal values).
+        # x = day number
+        # y = user data
+        # For each user, clean up x,y data by removing None values.
+        # Ignore 1st row (goal values).
         for user in dataT[2:]:
-            tempy = user[1:]
-            tempx = x
-            for i, datum in reversed(list(enumerate(tempy))):
+            y = user[1:]
+            x = DAYS
+            for i, datum in reversed(list(enumerate(y))):
                 if datum == None:
-                    tempx = np.delete(tempx, i)
-                    tempy = np.delete(tempy, i)
+                    x = np.delete(x, i)
+                    y = np.delete(y, i)
 
-            # Check polyfit (linear -> deg=1). Save polyfit and user info if this is winning user so far.
-            c = np.polynomial.polynomial.polyfit(tempx.astype(float), tempy.astype(float),1)
-            check = np.polynomial.polynomial.polyval(x[-1], c)
-            if check > winning:
-                winner = user[0]
-                winnerp = c
-                winning = check
+            # Check polyfit with degree number of terms. Save polyfit and user info if this is winning user so far.
+            if len(x) > 1:
+                degree = 3
+                c = np.polynomial.polynomial.polyfit(x.astype(float), y.astype(float),degree)
 
-        if winning != 0:
-            data[0].append(f"{winner} is winning!")
-            data[1].append(np.polynomial.polynomial.polyval(datetime.fromisoformat(data[1][0]).timestamp(), winnerp))
-            data[-1].append(np.polynomial.polynomial.polyval(datetime.fromisoformat(data[-1][0]).timestamp(), winnerp))
-            for i in range(2, len(data)-1):
-                data[i].append(None)
+                # Evaluate each user at last day for apples to apples comparison
+                check = np.polynomial.polynomial.polyval(DAYS[-1], c)
+
+                if (typ=="1" and check > winning) or (typ=="2" and check < winning):
+                    winner = user[0]
+                    winnerp = c
+                    winning = check
+
+        if winning != initial:
+            data[0].append(f"go {winner} go!")
+            # data[1].append(np.polynomial.polynomial.polyval(datetime.fromisoformat(data[1][0]).timestamp(), winnerp))
+            # data[-1].append(np.polynomial.polynomial.polyval(datetime.fromisoformat(data[-1][0]).timestamp(), winnerp))
+            for i in range(1, len(data)):
+                data[i].append(np.polynomial.polynomial.polyval(datetime.fromisoformat(data[i][0]).timestamp(), winnerp))
         return data
     else:
         return data
