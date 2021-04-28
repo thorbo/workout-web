@@ -88,12 +88,6 @@ def index():
     if int(typ) == 1: # Run X minute mile
         print("typ is 1")
         for i, user in enumerate(USERS):
-            # if there's no data skip this user
-            if not dataPresent[i]:
-                print(f"skipped {user}")
-                user["score"] = float('inf')
-                continue
-
             # get fastest mile
             fastestMile = float('inf')
             # skip the header row
@@ -106,10 +100,15 @@ def index():
                 if mileTime:
                     fastestMile = min(fastestMile, mileTime)
 
-            user["score"] = fastestMile
-
-            # if better than or equal to goal, then reachedGoal = True
-            user["reachedGoal"] = user["score"] <= GROUP["goal"]
+            # if there's no data skip this user
+            if fastestMile == float('inf'):
+                user["score"] = float('inf')
+                user["reachedGoal"] = False
+                continue
+            else:
+                user["score"] = fastestMile
+                # if better than or equal to goal, then reachedGoal = True
+                user["reachedGoal"] = user["score"] <= GROUP["goal"]
 
         # sort USERS by lowest
         USERS.sort(key=lambda x: x.get('score'))
@@ -120,14 +119,7 @@ def index():
 
     # elif typ == 4: # Do X pushups
 
-    # remove users with no data
-    for i, isDataPresent in reversed(list(enumerate(dataPresent))):
-        # if that user does not have data, remove their column
-        if not isDataPresent:
-            # add one because the first element is a date
-            idx = i + 1
-            for day in data:
-                del day[idx]
+
 
     return render_template("index.html", groups=GROUPS, data=data, typ=typ, selectedGroup=GROUP, users=USERS)
 

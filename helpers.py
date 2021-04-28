@@ -101,6 +101,15 @@ def datatable(db, USERS, START, typ):
     # append the day's data
     data.append(dayOfData)
 
+    # remove users with no data
+    for i, isDataPresent in reversed(list(enumerate(dataPresent))):
+        # if that user does not have data, remove their column
+        if not isDataPresent:
+            # add one because the first element is a date
+            idx = i + 1
+            for day in data:
+                del day[idx]
+
 
     """ CONVERT SQL QUERY DICTS INTO TABLE FOR GOOGLE CHART API USE
 
