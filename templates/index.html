@@ -11,13 +11,19 @@
         data = JSON.parse('{{ data|tojson }}')
         typ = JSON.parse('{{ typ }}')
 
+        last = data[0].length -1;
+        if (data[0][last].slice(-3) == "go!"){
+          last -= 1;
+        } else {
+          last = 0
+        };
+
         for (i=0; i<data.length; i++){
           data[i][0] = new Date(data[i][0])
         }
 
         chartType = "LineChart";
         containerId = "chart1";
-
         chartTitle = typ==1 ? 'X Pushups in a Row' : 'Run X Minute Mile'
         vAxisLabel = typ==1 ? 'Pushups' : 'Mile Time'
         options = {
@@ -27,18 +33,22 @@
             hAxis: {format:'MMM d, y'},
             series: {
               0: { lineDashStyle: [10, 5] },
+              [last]: { lineDashStyle: [5, 10] }
             },
-
             vAxis: {
               title:`${vAxisLabel}`,
               textPosition: 'in',
               titleTextStyle: {
                 bold: true,
                 fontSize: 16
-              }
-
-            }
-
+              },
+              viewWindow:{
+                min: 0,
+              },
+            },
+            hAxis: {
+              format: 'MMM-dd-YY',
+            },
           };
 
     </script>
@@ -68,7 +78,6 @@
 
 {% endblock %}
 
-
 {% block background %}
 <!--Little Arnolds-->
 <div class="arncontain body1" id="arnold" style="z-index:-1; position: absolute"></div>
@@ -83,6 +92,9 @@
 {% endblock %}
 
 {% block main %}
+<audio autoplay>
+  <source src="/static/terrific.mp3" type="audio/mpeg">
+</audio>
 
 <div style="margin:30px"></div>
 
