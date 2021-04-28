@@ -17,23 +17,29 @@
 
         chartType = "LineChart";
         containerId = "chart1";
-        if (typ == 1){
-          options = {
-            title:"X Pushups in a Row",
-            interpolateNulls: true,
+
+        chartTitle = typ==1 ? 'X Pushups in a Row' : 'Run X Minute Mile'
+        vAxisLabel = typ==1 ? 'Pushups' : 'Mile Time'
+        options = {
+            "title":`${chartTitle}`,
+            'interpolateNulls': true,
+            legend: { position: 'bottom' },
+            hAxis: {format:'MMM d, y'},
             series: {
               0: { lineDashStyle: [10, 5] },
             },
+
+            vAxis: {
+              title:`${vAxisLabel}`,
+              textPosition: 'in',
+              titleTextStyle: {
+                bold: true,
+                fontSize: 16
+              }
+
+            }
+
           };
-        } else {
-          options = {
-            title:"Run X Minute Mile",
-            interpolateNulls: true,
-            series: {
-              0: { lineDashStyle: [10, 5] },
-            },
-          };
-        };
 
     </script>
 
