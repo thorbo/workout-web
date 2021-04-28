@@ -52,8 +52,6 @@ db = SQL("sqlite:///workout.db")
 def index():
     user = session["user_id"]
 
-    userHasNoGroups = False
-
     if request.method == "POST":
         # Update data table with workout data
         action = request.form.get("logbutton")
@@ -75,7 +73,6 @@ def index():
 
         GROUPS = db.execute("SELECT group_name, group_num, type, start FROM groups WHERE group_num IN (SELECT group_num FROM registry WHERE user_id = ?)", user)
         if len(GROUPS) == 0:
-            userHasNoGroups = True
             return render_template("greeting.html")
 
         GROUP = GROUPS[0]
