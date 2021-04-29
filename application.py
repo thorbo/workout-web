@@ -9,7 +9,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import date
 
 
-from helpers import apology, login_required, datatable, addgoal, projectwin
+from helpers import apology, login_required, datatable, addgoal, projectwin, getUsersWithData
 
 # Configure application
 app = Flask(__name__)
@@ -85,111 +85,8 @@ def index():
         # Check for more than multiple data points and more than one user in the group
         data = projectwin(data, typ)
 
-    if int(typ) == 1: # Run X minute mile
-        for i, user in enumerate(USERS):
-            # get fastest mile
-            fastestMile = float('inf')
-            # skip the header row
-            for day in data[1:]:
-                # add two because the first element is a date and the second is the goal
-                if day[i + 2] == None:
-                    continue
-                mileTime = int(day[i + 1])
-                # if it's a valid value
-                if mileTime:
-                    fastestMile = min(fastestMile, mileTime)
-
-            # if there's no data skip this user
-            if fastestMile == float('inf'):
-                user["score"] = float('inf')
-                user["reachedGoal"] = False
-                continue
-            else:
-                user["score"] = fastestMile
-                # if better than or equal to goal, then reachedGoal = True
-                user["reachedGoal"] = user["score"] <= GROUP["goal"]
-
-        # sort USERS by ascending
-        USERS.sort(key=lambda x: x.get('score'))
-
-    elif typ == 2: # Do X pushups in a row
-        for i, user in enumerate(USERS):
-            # get most pushups
-            mostPushups = 0
-            # skip the header row
-            for day in data[1:]:
-                # add two because the first element is a date and the second is the goal
-                if day[i + 2] == None:
-                    continue
-                numPushups = int(day[i + 2])
-                # if it's a valid value
-                if numPushups:
-                    mostPushups = max(mostPushups, numPushups)
-
-            # if there's no data skip this user
-            if mostPushups == 0
-                user["score"] = 0
-                user["reachedGoal"] = False
-                continue
-            else:
-                user["score"] = mostPushups
-                # if better than or equal to goal, then reachedGoal = True
-                user["reachedGoal"] = user["score"] <= GROUP["goal"]
-
-        # sort USERS by descending
-        USERS.sort(key=lambda x: x.get('score'), reverse=True)
-
-    elif typ == 3: # Run X miles
-        for i, user in enumerate(USERS):
-            # get most pushups
-            totalMiles = 0
-            # skip the header row
-            for day in data[1:]:
-                # add two because the first element is a date and the second is the goal
-                if day[i + 2] == None:
-                    continue
-                miles = int(day[i + 2])
-                # if it's a valid value
-                if miles:
-                    totalMiles = totalMiles + miles
-
-            user["score"] = totalMiles
-            # if better than or equal to goal, then reachedGoal = True
-            user["reachedGoal"] = user["score"] <= GROUP["goal"]
-
-        # sort USERS by descending
-        USERS.sort(key=lambda x: x.get('score'), reverse=True)
-    elif typ == 4: # Do X pushups
-        for i, user in enumerate(USERS):
-            # get most pushups
-            totalPushups = 0
-            # skip the header row
-            for day in data[1:]:
-                # add two because the first element is a date and the second is the goal
-                if day[i + 2] == None:
-                    continue
-                pushups = int(day[i + 2])
-                # if it's a valid value
-                if pushups:
-                    totalPushups = totalPushups + pushups
-
-            user["score"] = totalPushups
-            # if better than or equal to goal, then reachedGoal = True
-            user["reachedGoal"] = user["score"] <= GROUP["goal"]
-
-        # sort USERS by descending
-        USERS.sort(key=lambda x: x.get('score'), reverse=True)
-
-    # remove users with no data
-    for i, isDataPresent in reversed(list(enumerate(dataPresent))):
-        # if that user does not have data, remove their column
-        if not isDataPresent:
-            # add one because the first element is a date
-            idx = i + 1
-            for day in data:
-                del day[idx]
-
-    return render_template("index.html", groups=GROUPS, data=data, typ=typ, selectedGroup=GROUP, users=USERS)
+    usersWithData = getUsersWithData(USERS, data, goal, typ)
+    return render_template("index.html", groups=GROUPS, data=data, typ=typ, selectedGroup=GROUP, users=usersWithData)
 
 
 @app.route("/signup", methods=["GET", "POST"])

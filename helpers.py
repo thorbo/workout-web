@@ -101,6 +101,15 @@ def datatable(db, USERS, START, typ):
     # append the day's data
     data.append(dayOfData)
 
+    # remove users with no data
+    for i, isDataPresent in reversed(list(enumerate(dataPresent))):
+        # if that user does not have data, remove their column
+        if not isDataPresent:
+            # add one because the first element is a date
+            idx = i + 1
+            for day in data:
+                del day[idx]
+
 
     """ CONVERT SQL QUERY DICTS INTO TABLE FOR GOOGLE CHART API USE
 
@@ -181,3 +190,50 @@ def projectwin(data, typ):
         return data
     else:
         return data
+
+def getUsersWithData(users, data, goal, typ):
+
+    usernamesWithData = data[0][2:]
+    usersWithData = []
+    for user in users:
+        if user["name"] in usernamesWithData:
+            usersWithData.append(user)
+
+    if int(typ) == 1: # Run X minute mile
+        return calculateRankings(data, usersWithData, goal, 'best', True)
+    elif typ == 2: # Do X pushups in a row
+        return calculateRankings(data, usersWithData, goal, 'best', False)
+    elif typ == 3: # Run X miles
+        return calculateRankings(data, usersWithData, goal, 'cumulative', False)
+    elif typ == 4: # Do X pushups
+        return calculateRankings(data, usersWithData, goal, 'cumulative', False)
+
+
+def calculateRankings(data, usersWithData, goal, rankType, ascending):
+    for i, user in enumerate(usersWithData):
+        # initialize score
+        finalScore = float('inf') if ascending else 0
+        # skip the header row
+        for day in data[1:]:
+            # add two because the first element is a date and the second is the goal
+            if day[i + 2] == None:
+                continue
+            score = int(day[i + 2])
+            # if it's a valid value
+            if score:
+                if rankType == 'best':
+                    finalScore = min(finalScore, score) if ascending else max(finalScore, score)
+                elif rankType == 'cumulative':
+                    finalScore = finalScore + score
+
+        user["score"] = finalScore
+        # if better than or equal to goal, then reachedGoal = True
+        user["reachedGoal"] = (user["score"] <= goal) if ascending else (user["score"] >= goal)
+
+    # sort USERS by ascending
+    if ascending:
+        usersWithData.sort(key=lambda x: x.get('score'))
+    else:
+        usersWithData.sort(key=lambda x: x.get('score'), reverse=True)
+
+    return usersWithData
