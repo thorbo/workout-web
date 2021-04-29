@@ -22,8 +22,9 @@ Home
 
         chartType = "LineChart";
         containerId = "chart1";
-        chartTitle = typ==1 ? 'X Pushups in a Row' : 'Run X Minute Mile'
-        vAxisLabel = typ==1 ? 'Pushups' : 'Mile Time'
+        chartTitle = typ==1 ? 'X Pushups in a Row' : typ==2 ? 'Run X Minute Mile' : typ==3 ? 'Run X miles' : 'Do X pushups'
+        vAxisLabel = typ==1 || typ==4 ? 'Pushups' : 'Mile Time'
+
         options = {
             "title":`${chartTitle}`,
             'interpolateNulls': true,

@@ -86,14 +86,13 @@ def index():
         data = projectwin(data, typ)
 
     if int(typ) == 1: # Run X minute mile
-        print("typ is 1")
         for i, user in enumerate(USERS):
             # get fastest mile
             fastestMile = float('inf')
             # skip the header row
             for day in data[1:]:
-                # add one because the first element is a date
-                if day[i + 1] == None:
+                # add two because the first element is a date and the second is the goal
+                if day[i + 2] == None:
                     continue
                 mileTime = int(day[i + 1])
                 # if it's a valid value
@@ -110,16 +109,85 @@ def index():
                 # if better than or equal to goal, then reachedGoal = True
                 user["reachedGoal"] = user["score"] <= GROUP["goal"]
 
-        # sort USERS by lowest
+        # sort USERS by ascending
         USERS.sort(key=lambda x: x.get('score'))
 
-    # elif typ == 2: # Do X pushups in a row
+    elif typ == 2: # Do X pushups in a row
+        for i, user in enumerate(USERS):
+            # get most pushups
+            mostPushups = 0
+            # skip the header row
+            for day in data[1:]:
+                # add two because the first element is a date and the second is the goal
+                if day[i + 2] == None:
+                    continue
+                numPushups = int(day[i + 2])
+                # if it's a valid value
+                if numPushups:
+                    mostPushups = max(mostPushups, numPushups)
 
-    # elif typ == 3: # Run X miles
+            # if there's no data skip this user
+            if mostPushups == 0
+                user["score"] = 0
+                user["reachedGoal"] = False
+                continue
+            else:
+                user["score"] = mostPushups
+                # if better than or equal to goal, then reachedGoal = True
+                user["reachedGoal"] = user["score"] <= GROUP["goal"]
 
-    # elif typ == 4: # Do X pushups
+        # sort USERS by descending
+        USERS.sort(key=lambda x: x.get('score'), reverse=True)
 
+    elif typ == 3: # Run X miles
+        for i, user in enumerate(USERS):
+            # get most pushups
+            totalMiles = 0
+            # skip the header row
+            for day in data[1:]:
+                # add two because the first element is a date and the second is the goal
+                if day[i + 2] == None:
+                    continue
+                miles = int(day[i + 2])
+                # if it's a valid value
+                if miles:
+                    totalMiles = totalMiles + miles
 
+            user["score"] = totalMiles
+            # if better than or equal to goal, then reachedGoal = True
+            user["reachedGoal"] = user["score"] <= GROUP["goal"]
+
+        # sort USERS by descending
+        USERS.sort(key=lambda x: x.get('score'), reverse=True)
+    elif typ == 4: # Do X pushups
+        for i, user in enumerate(USERS):
+            # get most pushups
+            totalPushups = 0
+            # skip the header row
+            for day in data[1:]:
+                # add two because the first element is a date and the second is the goal
+                if day[i + 2] == None:
+                    continue
+                pushups = int(day[i + 2])
+                # if it's a valid value
+                if pushups:
+                    totalPushups = totalPushups + pushups
+
+            user["score"] = totalPushups
+            # if better than or equal to goal, then reachedGoal = True
+            user["reachedGoal"] = user["score"] <= GROUP["goal"]
+
+        # sort USERS by descending
+        USERS.sort(key=lambda x: x.get('score'), reverse=True)
+
+    # remove users with no data
+    for i, isDataPresent in reversed(list(enumerate(dataPresent))):
+        # if that user does not have data, remove their column
+        if not isDataPresent:
+            # add one because the first element is a date
+            idx = i + 1
+            for day in data:
+                del day[idx]
 
     return render_template("index.html", groups=GROUPS, data=data, typ=typ, selectedGroup=GROUP, users=USERS)
 
