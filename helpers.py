@@ -237,3 +237,5 @@ def calculateRankings(data, usersWithData, goal, rankType, ascending):
         usersWithData.sort(key=lambda x: x.get('score'), reverse=True)
 
     return usersWithData
+    
+    
